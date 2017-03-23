@@ -1,0 +1,24 @@
+{
+  "name": "gh-user-stats",
+  "version": "1.0.0",
+  "description": "Gets several useful statistics about github users",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manafount/gh-user-stats.git"
+  },
+  "keywords": [
+    "github",
+    "user",
+    "stats"
+  ],
+  "author": "Matt Kerchner <manafount@gmail.com> (https://mkerch.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/manafount/gh-user-stats/issues"
+  },
+  "homepage": "https://github.com/manafount/gh-user-stats#readme"
+}
