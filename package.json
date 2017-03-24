@@ -20,5 +20,12 @@
   "bugs": {
     "url": "https://github.com/manafount/gh-user-stats/issues"
   },
-  "homepage": "https://github.com/manafount/gh-user-stats#readme"
+  "homepage": "https://github.com/manafount/gh-user-stats#readme",
+  "dependencies": {
+    "isomorphic-fetch": "2.2.1"
+  },
+  "devDependencies": {
+    "babel-cli": "6.24.0",
+    "babel-preset-es2017": "6.22.0"
+  }
 }
