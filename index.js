@@ -11,11 +11,14 @@ async function getRepos(username) {
     console.log(response.headers);
     let repos = await response.json();
     console.log(`Found ${repos.length} repos.`);
+    let totalCommits = 0;
     for (let i = 0; i < repos.length; i++) {
       console.log(username, repos[i].name);
-      let commits = await getCommits(username, repos[i]);
-      console.log(commits);
+      let numCommits = await getCommits(username, repos[i]);
+      console.log(`${username} had ${numCommits} commits in ${repos[i].name}`);
+      totalCommits += numCommits;
     }
+    console.log(`${username} has ${totalCommits} total commits.`);
   } catch (err) {
     console.log(err.message);
   }
@@ -26,10 +29,13 @@ async function getCommits(username, repo) {
   try {
     let response = await fetch(url, { headers : headers });
     let commits = await response.json();
+    let numCommits = 0;
     for (let i = 0; i < commits.length; i++) {
-      console.log(commits[i]);
+      if (commits[i].author.login === username) {
+        numCommits = commits[i].total;
+      }
     }
-    return commits;
+    return numCommits;
   } catch (err) {
     console.log(err.message);
   }
@@ -55,5 +61,5 @@ async function getEvents(username) {
   }
 }
 
-getRepos('test');
-// getEvents('manafount');
+getRepos('octocat');
+// getEvents('frankbi322');
