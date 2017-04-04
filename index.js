@@ -1,4 +1,4 @@
-const fetch = require('isomorphic-fetch');
+const fetch = require('graphql-fetch')('http://domain.com/graphql')
 const headers = new Headers({
     "User-Agent"   : "GH-User-Stats"
 });
@@ -61,5 +61,5 @@ async function getEvents(username) {
   }
 }
 
-getRepos('octocat');
+getRepos('gettintoasty');
 // getEvents('frankbi322');
