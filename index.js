@@ -1,4 +1,4 @@
-const fetch = require('graphql-fetch')('http://domain.com/graphql')
+const fetch = require('isomorphic-fetch');
 const headers = new Headers({
     "User-Agent"   : "GH-User-Stats"
 });
@@ -25,14 +25,15 @@ async function getRepos(username) {
 };
 
 async function getCommits(username, repo) {
-  let url = `https://api.github.com/repos/${username}/${repo.name}/stats/contributors`;
+  let url = `https://api.github.com/repos/${username}/${repo.name}/commits`;
   try {
     let response = await fetch(url, { headers : headers });
     let commits = await response.json();
     let numCommits = 0;
     for (let i = 0; i < commits.length; i++) {
-      if (commits[i].author.login === username) {
-        numCommits = commits[i].total;
+      let committer = commits[i].committer;
+      if (committer !== null && committer.login === username) {
+        numCommits++;
       }
     }
     return numCommits;
@@ -61,5 +62,5 @@ async function getEvents(username) {
   }
 }
 
-getRepos('gettintoasty');
+getRepos('manafount');
 // getEvents('frankbi322');
