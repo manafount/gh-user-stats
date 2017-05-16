@@ -23,6 +23,7 @@
   "homepage": "https://github.com/manafount/gh-user-stats#readme",
   "dependencies": {
     "crawler": "1.0.5",
+    "github-api": "3.0.0",
     "graphql-fetch": "1.0.1",
     "isomorphic-fetch": "2.2.1"
   },

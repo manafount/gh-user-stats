@@ -1,8 +1,15 @@
-let Crawler = require("crawler");
+let Crawler = require('crawler');
+let GitHub = require('github-api');
 let fetch = require('isomorphic-fetch');
 let headers = new Headers({
     "User-Agent"   : "GH-User-Stats"
 });
+
+var passwordAuth = new GitHub({
+  username: process.env.GH_LOGIN,
+  password: process.env.GH_PASS
+});
+
 
 let crawler = new Crawler({
   maxConnections : 10,
@@ -87,5 +94,5 @@ async function getEvents(username) {
   }
 }
 
-getRepos('test');
+// getRepos('test');
 // getEvents('frankbi322');
