@@ -1,6 +1,30 @@
-const fetch = require('isomorphic-fetch');
-const headers = new Headers({
+let Crawler = require("crawler");
+let fetch = require('isomorphic-fetch');
+let headers = new Headers({
     "User-Agent"   : "GH-User-Stats"
+});
+
+let crawler = new Crawler({
+  maxConnections : 10,
+  skipDuplicates: false,
+  // This will be called for each crawled page
+  callback : function (error, res, done) {
+    if(error){
+      console.log(error);
+    }else{
+      let $ = res.$;
+      // $ is Cheerio by default
+      //a lean implementation of core jQuery designed specifically for the server
+      // console.log($("title").text());
+      console.log(res.request.uri.href);
+      if(res.request.uri.href.search(/graphs$/) === -1){
+        crawler.queue(res.request.uri.href + '/graphs')
+      }else{
+        console.log($("contributors").html());
+      }
+    }
+    done();
+  }
 });
 
 async function getRepos(username) {
@@ -16,6 +40,7 @@ async function getRepos(username) {
       console.log(username, repos[i].name);
       let numCommits = await getCommits(username, repos[i]);
       console.log(`${username} had ${numCommits} commits in ${repos[i].name}`);
+      crawler.queue(repos[i].url)
       totalCommits += numCommits;
     }
     console.log(`${username} has ${totalCommits} total commits.`);
@@ -62,5 +87,5 @@ async function getEvents(username) {
   }
 }
 
-getRepos('manafount');
+getRepos('test');
 // getEvents('frankbi322');
