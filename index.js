@@ -5,7 +5,7 @@ let headers = new Headers({
     "User-Agent"   : "GH-User-Stats"
 });
 
-var passwordAuth = new GitHub({
+let github = new GitHub({
   username: process.env.GH_LOGIN,
   password: process.env.GH_PASS
 });
@@ -94,5 +94,15 @@ async function getEvents(username) {
   }
 }
 
+github.getUser('test').listRepos()
+  .then(function({data}) {
+    console.log(data.length);
+});
+
+rateLimit = github.getRateLimit();
+rateLimit.getRateLimit()
+  .then(function({data}) {
+    console.log(`${data.resources.core.remaining} of ${data.resources.core.limit} requests available until reset.`);
+});
 // getRepos('test');
 // getEvents('frankbi322');
