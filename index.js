@@ -1,77 +1,43 @@
-let Crawler = require('crawler');
 let GitHub = require('github-api');
 let fetch = require('isomorphic-fetch');
 let headers = new Headers({
     "User-Agent"   : "GH-User-Stats"
 });
+let ghcrawler = require('./crawler.js');
 
 let github = new GitHub({
   username: process.env.GH_LOGIN,
   password: process.env.GH_PASS
 });
 
-
-let crawler = new Crawler({
-  maxConnections : 10,
-  skipDuplicates: false,
-  // This will be called for each crawled page
-  callback : function (error, res, done) {
-    if(error){
-      console.log(error);
-    }else{
-      let $ = res.$;
-      // $ is Cheerio by default
-      //a lean implementation of core jQuery designed specifically for the server
-      // console.log($("title").text());
-      console.log(res.request.uri.href);
-      if(res.request.uri.href.search(/graphs$/) === -1){
-        crawler.queue(res.request.uri.href + '/graphs')
-      }else{
-        console.log($("contributors").html());
-      }
-    }
-    done();
-  }
-});
+let rateLimit = github.getRateLimit();
 
 async function getRepos(username) {
-  let url = `https://api.github.com/users/${username}/repos`;
-  console.log(`Getting repos for user ${username}...`);
-  try {
-    let response = await fetch(url, { headers : headers });
-    console.log(response.headers);
-    let repos = await response.json();
-    console.log(`Found ${repos.length} repos.`);
-    let totalCommits = 0;
-    for (let i = 0; i < repos.length; i++) {
-      console.log(username, repos[i].name);
-      let numCommits = await getCommits(username, repos[i]);
-      console.log(`${username} had ${numCommits} commits in ${repos[i].name}`);
-      crawler.queue(repos[i].url)
-      totalCommits += numCommits;
-    }
-    console.log(`${username} has ${totalCommits} total commits.`);
-  } catch (err) {
-    console.log(err.message);
+  let user = await github.getUser(username);
+  let response = await user.listRepos();
+  let repos = response.data;
+  console.log(repos.length);
+
+  let totalCommits = 0;
+
+  let data = {};
+
+  let allAuthoredCommits = await Promise.all(repos.map(getCommits(username, repo)));
+
+  return data;
+
+  for (let i = 0; i < repos.length; i++) {
+    let numCommits = await getCommits(username, repos[i]);
+    console.log(`${username} had ${numCommits} commits in ${repos[i].name}`);
+    totalCommits += numCommits;
   }
+  console.log(`${username} has ${totalCommits} total commits.`);
 };
 
 async function getCommits(username, repo) {
-  let url = `https://api.github.com/repos/${username}/${repo.name}/commits`;
-  try {
-    let response = await fetch(url, { headers : headers });
-    let commits = await response.json();
-    let numCommits = 0;
-    for (let i = 0; i < commits.length; i++) {
-      let committer = commits[i].committer;
-      if (committer !== null && committer.login === username) {
-        numCommits++;
-      }
-    }
-    return numCommits;
-  } catch (err) {
-    console.log(err.message);
-  }
+  let commits = await repo.listCommits({author: username});
+  console.log(`${username} had ${commits.length} commits in ${repo.fullname}`);
+  return commits;
 };
 
 async function getEvents(username) {
@@ -94,15 +60,15 @@ async function getEvents(username) {
   }
 }
 
+// testing only - remember to delete these!
 github.getUser('test').listRepos()
   .then(function({data}) {
     console.log(data.length);
 });
 
-rateLimit = github.getRateLimit();
 rateLimit.getRateLimit()
   .then(function({data}) {
     console.log(`${data.resources.core.remaining} of ${data.resources.core.limit} requests available until reset.`);
 });
-// getRepos('test');
+getRepos('test');
 // getEvents('frankbi322');
