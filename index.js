@@ -15,30 +15,25 @@ let rateLimit = github.getRateLimit();
 async function getRepos(username) {
   let user = await github.getUser(username);
   let response = await user.listRepos();
-  let repos = await response.data;
-  console.log(repos.length);
-
+  let repoList = await response.data;
+  let repos = repoList.map(repo => github.getRepo(repo.owner.login, repo.name))
   let totalCommits = 0;
-
-  let data = {};
-
-  let allAuthoredCommits = await Promise.all(repos.map(repo => getCommits(username, repo).catch(err => console.log(err))));
-
-  console.log(repos[0].full_name);
-
-  for (let i = 0; i < repos.length; i++) {
-    let numCommits = await getCommits(username, repos[i]);
-    console.log(`${username} had ${numCommits} commits in ${repos[i].name}`);
-    totalCommits += numCommits;
-  }
+  let allAuthoredCommits = await Promise.all(repos.map(repo => getCommits(username, repo)
+    .catch(err => {
+      if (err.response.status === 409) return;
+      console.log(err);
+    }
+  )));
+  totalCommits += allAuthoredCommits.map(commits => commits.length)
+    .reduce((acc, val) => acc + val, 0);
   console.log(`${username} has ${totalCommits} total commits.`);
 };
 
 async function getCommits(username, repo) {
-  console.log("called getCommits");
-  let commits = await repo.listCommits({author: username});
-  console.log(`${username} had ${commits.length} commits in ${repo.fullname}`);
-  return commits;
+  let response = await repo.listCommits({author: username});
+  let commits = await response.data;
+  console.log(commits.length);
+  return commits
 };
 
 async function getEvents(username) {
@@ -61,15 +56,9 @@ async function getEvents(username) {
   }
 }
 
-// testing only - remember to delete these!
-// github.getUser('test').listRepos()
-//   .then(function({data}) {
-//     console.log(data.length);
-// });
-
 rateLimit.getRateLimit()
   .then(function({data}) {
     console.log(`${data.resources.core.remaining} of ${data.resources.core.limit} requests available until reset.`);
 });
-getRepos('test');
+getRepos('manafount');
 // getEvents('frankbi322');
