@@ -15,16 +15,16 @@ let rateLimit = github.getRateLimit();
 async function getRepos(username) {
   let user = await github.getUser(username);
   let response = await user.listRepos();
-  let repos = response.data;
+  let repos = await response.data;
   console.log(repos.length);
 
   let totalCommits = 0;
 
   let data = {};
 
-  let allAuthoredCommits = await Promise.all(repos.map(getCommits(username, repo)));
+  let allAuthoredCommits = await Promise.all(repos.map(repo => getCommits(username, repo).catch(err => console.log(err))));
 
-  return data;
+  console.log(repos[0].full_name);
 
   for (let i = 0; i < repos.length; i++) {
     let numCommits = await getCommits(username, repos[i]);
@@ -35,6 +35,7 @@ async function getRepos(username) {
 };
 
 async function getCommits(username, repo) {
+  console.log("called getCommits");
   let commits = await repo.listCommits({author: username});
   console.log(`${username} had ${commits.length} commits in ${repo.fullname}`);
   return commits;
@@ -61,10 +62,10 @@ async function getEvents(username) {
 }
 
 // testing only - remember to delete these!
-github.getUser('test').listRepos()
-  .then(function({data}) {
-    console.log(data.length);
-});
+// github.getUser('test').listRepos()
+//   .then(function({data}) {
+//     console.log(data.length);
+// });
 
 rateLimit.getRateLimit()
   .then(function({data}) {
