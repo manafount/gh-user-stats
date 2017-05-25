@@ -32,33 +32,17 @@ async function getRepos(username) {
 async function getCommits(username, repo) {
   let response = await repo.listCommits({author: username});
   let commits = await response.data;
-  console.log(commits.length);
+  console.log(`${commits.length} commits in ${repo.__fullname}`);
   return commits
 };
 
 async function getEvents(username) {
-  let url = `https://api.github.com/users/${username}/events/public`;
-  console.log(`Getting events for user ${username}...`);
-  try {
-    let response = await fetch(url, { headers : headers });
-    let events = await response.json();
-    let tallyEvents = {};
-    console.log(`Found ${events.length} events.`);
-    for (let i = 0; i < events.length; i++) {
-      if (tallyEvents[events[i].type] === undefined) {
-        tallyEvents[events[i].type] = 0;
-      }
-      tallyEvents[events[i].type]++;
-    }
-    console.log(tallyEvents);
-  } catch (err) {
-    console.log(err.message);
-  }
+
 }
 
 rateLimit.getRateLimit()
   .then(function({data}) {
     console.log(`${data.resources.core.remaining} of ${data.resources.core.limit} requests available until reset.`);
 });
-getRepos('manafount');
-// getEvents('frankbi322');
+getRepos('frankbi322');
+// // getEvents('frankbi322');
