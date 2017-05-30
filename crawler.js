@@ -24,6 +24,20 @@ class GithubCrawler {
       }
     });
   }
+
+  getTimeCard() {
+    this.crawler.queue([{
+      callback: (error, res, done) => {
+        if(error){
+          console.log(error);
+        }else{
+          let $ = res.$;
+
+        }
+        done();
+      }
+    }])
+  }
 }
 
 module.exports = GithubCrawler;
