@@ -1,4 +1,5 @@
 let Crawler = require('crawler');
+let jsdom = require('jsdom');
 
 class GithubCrawler {
   constructor() {
@@ -25,14 +26,15 @@ class GithubCrawler {
     });
   }
 
-  getTimeCard() {
+  getPunchCard(repo) {
     this.crawler.queue([{
+      uri: repo.url + '/graphs/punch-card',
       callback: (error, res, done) => {
         if(error){
           console.log(error);
         }else{
           let $ = res.$;
-
+          console.log($.html());
         }
         done();
       }
@@ -41,3 +43,8 @@ class GithubCrawler {
 }
 
 module.exports = GithubCrawler;
+
+//For testing purposes!
+r = {url: 'https://github.com/manafount/algorithm-racer'}
+c = new GithubCrawler();
+c.getPunchCard(r);

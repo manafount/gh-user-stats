@@ -4,7 +4,8 @@
   "description": "Gets several useful statistics about github users",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/babel-node index.js"
+    "test": "./node_modules/.bin/babel-node index.js",
+    "crawler_test": "./node_modules/.bin/babel-node crawler.js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,8 @@
     "crawler": "1.0.5",
     "github-api": "3.0.0",
     "graphql-fetch": "1.0.1",
-    "isomorphic-fetch": "2.2.1"
+    "isomorphic-fetch": "2.2.1",
+    "jsdom": "11.0.0"
   },
   "devDependencies": {
     "babel-cli": "6.24.0",
