@@ -13,7 +13,6 @@ class GithubCrawler {
         }else{
           let $ = res.$;
           // $ is Cheerio by default
-          // a lean implementation of core jQuery designed specifically for the server
           console.log(res.request.uri.href);
           if(res.request.uri.href.search(/graphs$/) === -1){
             crawler.queue(res.request.uri.href + '/graphs')
@@ -26,19 +25,24 @@ class GithubCrawler {
     });
   }
 
-  getPunchCard(repo) {
+  async getPunchCard(repo) {
+    let punchCard;
+
     this.crawler.queue([{
-      uri: repo.url + '/graphs/punch-card',
+      uri: repo.url + '/graphs/punch-card-data.json',
       callback: (error, res, done) => {
         if(error){
           console.log(error);
         }else{
-          let $ = res.$;
-          console.log($.html());
+          let data = res.body;
+          console.log(data);
+          punchCard = data;
         }
         done();
       }
-    }])
+    }]);
+
+    return punchCard;
   }
 }
 
@@ -47,4 +51,5 @@ module.exports = GithubCrawler;
 //For testing purposes!
 r = {url: 'https://github.com/manafount/algorithm-racer'}
 c = new GithubCrawler();
-c.getPunchCard(r);
+c.getPunchCard()
+  .then((data) => console.log(data));
