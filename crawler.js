@@ -25,7 +25,7 @@ class GithubCrawler {
     });
   }
 
-  async getPunchCard(repo) {
+  getPunchCard(repo) {
     let punchCard;
 
     this.crawler.queue([{
@@ -41,8 +41,6 @@ class GithubCrawler {
         done();
       }
     }]);
-
-    return punchCard;
   }
 }
 
@@ -51,5 +49,5 @@ module.exports = GithubCrawler;
 //For testing purposes!
 r = {url: 'https://github.com/manafount/algorithm-racer'}
 c = new GithubCrawler();
-c.getPunchCard()
-  .then((data) => console.log(data));
+c.getPunchCard(r);
+  // .then((data) => console.log(data));
