@@ -12,7 +12,6 @@ class GithubCrawler {
           console.log(error);
         }else{
           let $ = res.$;
-          // $ is Cheerio by default
           console.log(res.request.uri.href);
           if(res.request.uri.href.search(/graphs$/) === -1){
             crawler.queue(res.request.uri.href + '/graphs')
@@ -25,22 +24,21 @@ class GithubCrawler {
     });
   }
 
-  getPunchCard(repo) {
-    let punchCard;
-
-    this.crawler.queue([{
-      uri: repo.url + '/graphs/punch-card-data.json',
+  async getPunchCard(repo) {
+    let punchCard = await this.crawler.queue([{
+      uri: repo.url,
       callback: (error, res, done) => {
+        let data;
         if(error){
           console.log(error);
         }else{
-          let data = res.body;
-          console.log(data);
-          punchCard = data;
+          data = res.body;
         }
-        done();
+        done(data);
       }
     }]);
+
+    return punchCard;
   }
 }
 
