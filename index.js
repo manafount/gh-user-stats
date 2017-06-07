@@ -9,21 +9,22 @@ let github = new GitHub({
 
 let rateLimit = github.getRateLimit();
 
-async function getTotalCommits(username) {
+async function getAllUserCommits(username) {
   let user = await github.getUser(username);
   let response = await user.listRepos();
   let repoList = await response.data;
   let repos = repoList.map(repo => github.getRepo(repo.owner.login, repo.name))
-  let totalCommits = 0;
+  let result = []
+
   let allAuthoredCommits = await Promise.all(repos.map(repo => getCommits(username, repo)
     .catch(err => {
-      if (err.response.status === 409) return;
+      // if (err.response.status === 409) return;
       console.log(err);
     }
-  )));
-  totalCommits += allAuthoredCommits.map(commits => commits.length)
-    .reduce((acc, val) => acc + val, 0);
-  console.log(`${username} has ${totalCommits} total commits.`);
+  ))).reduce((acc, cur) => acc.concat(cur), []);
+  allAuthoredCommits.filter(commit => commit.length > 0);
+  console.log(`${username} has ${allAuthoredCommits.length} total commits.`);
+  return allAuthoredCommits;
 };
 
 async function getCommits(username, repo) {
@@ -45,5 +46,5 @@ rateLimit.getRateLimit()
   .then(function({data}) {
     console.log(`${data.resources.core.remaining} of ${data.resources.core.limit} requests available until reset.`);
 });
-getTotalCommits('frankbi322');
+getAllUserCommits('manafount');
 // // getEvents('frankbi322');

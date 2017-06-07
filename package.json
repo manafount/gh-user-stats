@@ -25,7 +25,7 @@
   "dependencies": {
     "bluebird": "3.5.0",
     "crawler": "1.0.5",
-    "github-api": "3.0.0",
+    "github-api": "3.1.0",
     "graphql-fetch": "1.0.1",
     "isomorphic-fetch": "2.2.1",
     "jsdom": "11.0.0"
