@@ -1,6 +1,7 @@
 let GitHub = require('github-api');
 let Promise = require('bluebird');
 let ghcrawler = require('./crawler.js');
+let sentiment = require('sentiment');
 
 let github = new GitHub({
   username: process.env.GH_LOGIN,
@@ -20,8 +21,8 @@ async function getAllUserCommits(username) {
     .catch(err => {
       // if (err.response.status === 409) return;
       console.log(err);
-    }
-  ))).reduce((acc, cur) => acc.concat(cur), []);
+    }))).reduce((acc, cur) => acc.concat(cur), []);
+
   allAuthoredCommits.filter(commit => commit.length > 0);
   console.log(`${username} has ${allAuthoredCommits.length} total commits.`);
   return allAuthoredCommits;
@@ -34,11 +35,24 @@ async function getCommits(username, repo) {
   return commits
 };
 
+async function getBasicUserProfile(username) {
+  userCommits = await getAllUserCommits(username);
+  userEvents = await getEvents(username);
+
+  commitMessages = userCommits.map(c => c.commit.message);
+  userSentiment = await getSentimentAnalysis(userCommits);
+  userPunchCard = await getPunchCard(username);
+}
+
+function getSentimentAnalysis(textArray) {
+
+}
+
 async function getPunchCard(username) {
 
 }
 
-async function getEvents(username) {
+async function getEvents(username, type) {
 
 }
 
@@ -47,4 +61,5 @@ rateLimit.getRateLimit()
     console.log(`${data.resources.core.remaining} of ${data.resources.core.limit} requests available until reset.`);
 });
 getAllUserCommits('manafount');
-// // getEvents('frankbi322');
+// .then(c => console.log(c));
+// getEvents('frankbi322');
