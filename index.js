@@ -36,16 +36,19 @@ async function getCommits(username, repo) {
 };
 
 async function getBasicUserProfile(username) {
-  userCommits = await getAllUserCommits(username);
-  userEvents = await getEvents(username);
+  let userCommits = await getAllUserCommits(username);
+  let userEvents = await getEvents(username);
 
-  commitMessages = userCommits.map(c => c.commit.message);
-  userSentiment = await getSentimentAnalysis(userCommits);
-  userPunchCard = await getPunchCard(username);
+  let commitMessages = userCommits.map(c => c.commit.message);
+  let userSentiment = await getSentimentAnalysis(userCommits);
+  let userPunchCard = await getPunchCard(username);
 }
 
 function getSentimentAnalysis(textArray) {
-
+  let sentimentArray = textArray.map(text => sentiment(text));
+  let avg = sentimentArray.reduce((acc, sent) => acc + sent.score, 0) / sentimentArray.length;
+  console.log('Average sentiment score: ' + avg);
+  return { average: avg, data: sentimentArray };
 }
 
 async function getPunchCard(username) {
@@ -60,6 +63,8 @@ rateLimit.getRateLimit()
   .then(function({data}) {
     console.log(`${data.resources.core.remaining} of ${data.resources.core.limit} requests available until reset.`);
 });
-getAllUserCommits('manafount');
+
+commits = getAllUserCommits('manafount');
 // .then(c => console.log(c));
 // getEvents('frankbi322');
+// getSentimentAnalysis(["message", "other message", "commit messages suck", "you're the worst", "I love this repo!"]);
